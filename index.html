@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="resources/css/index.css">
+    <link rel="stylesheet" href="resources/css/legal-popup-index.css">
+    <link rel="icon" href="resources/img/icon.svg" type="svg/x-icon">
+    <link rel="shortcut icon" href="resources/img/icon.svg" type="svg/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="resources/img/ios/ios-icon-180px.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="resources/img/ios/ios-icon-152px.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="resources/img/ios/ios-icon-144px.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="resources/img/ios/ios-icon-120px.png">
+    <title translate="no">To-Do List</title>
+</head>
+<body>
+    
+    <div class="background"></div>
+    <div class="heading">
+        <h1 Todo List App</h1></h1>
+    </div>
+    <div class="container">
+        <input type="text" id="taskInput" placeholder="Add a task...">
+        <button id="add-btn" onclick="addTask()">Add<i class="fas fa-plus-circle"></i></button>
+        <div id="taskList"></div>
+    </div>
+
+    <div id="popup-overlay"></div>
+            <div id="legal-popup-container">
+                <span id="legal-popup-close">&times;</span>
+
+                
+                <br>
+            </div>
+    <script src="resources/scripts/index.js"></script>
+    <script src="resources/scripts/legal-popup-index.js"></script>
+</body>
+</html>
