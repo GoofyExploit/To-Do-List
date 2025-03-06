@@ -5,22 +5,18 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
-app.use(bodyParser.json());  // To parse JSON bodies
+app.use(bodyParser.json());
 
-// In-memory storage for tasks (like localStorage in the frontend)
 let tasks = [
     { id: 1, task: "Learn Node.js", date: "03/05/25, 09:00 AM", completed: false },
     { id: 2, task: "Build a To-Do app", date: "03/05/25, 09:15 AM", completed: false }
 ];
 
-// Get all tasks
 app.get('/todos', (req, res) => {
     res.json(tasks);
 });
 
-// Get a single task by ID
 app.get('/todos/:id', (req, res) => {
     const { id } = req.params;
     const task = tasks.find(t => t.id == id);
@@ -32,7 +28,6 @@ app.get('/todos/:id', (req, res) => {
     res.json(task);
 });
 
-// Create a new task
 app.post('/todos', (req, res) => {
     const { task, date, completed } = req.body;
 
@@ -49,10 +44,9 @@ app.post('/todos', (req, res) => {
     };
 
     tasks.push(newTask);
-    res.status(201).json(newTask);  // Respond with the created task
+    res.status(201).json(newTask);
 });
 
-// Update an existing task
 app.put('/todos/:id', (req, res) => {
     const { id } = req.params;
     const { task, date, completed } = req.body;
@@ -62,7 +56,6 @@ app.put('/todos/:id', (req, res) => {
         return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Update the task fields
     tasks[taskIndex] = {
         id: tasks[taskIndex].id,
         task: task || tasks[taskIndex].task,
@@ -73,7 +66,6 @@ app.put('/todos/:id', (req, res) => {
     res.json(tasks[taskIndex]);
 });
 
-// Delete a task
 app.delete('/todos/:id', (req, res) => {
     const { id } = req.params;
     const taskIndex = tasks.findIndex(t => t.id == id);
@@ -82,11 +74,10 @@ app.delete('/todos/:id', (req, res) => {
         return res.status(404).json({ message: 'Task not found' });
     }
 
-    tasks.splice(taskIndex, 1);  // Remove the task from the array
-    res.status(204).end();  // Respond with no content
+    tasks.splice(taskIndex, 1);
+    res.status(204).end();  
 });
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
