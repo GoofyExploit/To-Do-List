@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', loadTasks);
 
-const API_URL = 'http://localhost:5000/todos';  // URL of your Node.js API
+const API_URL = 'http://localhost:5000/todos';
 
 function loadTasks() {
     fetch(API_URL)
@@ -17,7 +17,6 @@ function addTask() {
     const taskInput = document.getElementById('taskInput');
     const task = taskInput.value.trim();
 
-    // Validate task input
     if (!task) {
         alert("Task cannot be empty!");
         return;
@@ -50,7 +49,6 @@ function addTask() {
         completed: false
     };
 
-    // Check for duplicate task
     fetch(API_URL)
         .then(response => response.json())
         .then(tasks => {
