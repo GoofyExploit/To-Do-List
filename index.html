@@ -35,15 +35,15 @@
             <div class="input-boxes">
               <div class="input-box">
                 <i class="fas fa-envelope"></i>
-                <input type="text" id="loginEmail" placeholder="Enter your email" required>
+                <input type="text" placeholder="Enter your email" required>
               </div>
               <div class="input-box">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                <input type="password" placeholder="Enter your password" required>
               </div>
               <div class="text"><a href="#" style="color: black;">Forgot password?</a></div>
               <div class="button input-box">
-                <input type="submit" value="Login">
+                <input type="submit" value="Submit">
               </div>
               <div class="text sign-up-text">Don't have an account? <label for="flip">Signup now</label></div>
             </div>
@@ -56,18 +56,18 @@
             <div class="input-boxes">
               <div class="input-box">
                 <i class="fas fa-user"></i>
-                <input type="text" id="signupName" placeholder="Enter your name" required>
+                <input type="text" placeholder="Enter your name" required>
               </div>
               <div class="input-box">
                 <i class="fas fa-envelope"></i>
-                <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                <input type="email" placeholder="Enter your email" required>
               </div>
               <div class="input-box">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="signupPassword" placeholder="Enter your password" required>
+                <input type="password" placeholder="Enter your password" required>
               </div>
               <div class="button input-box">
-                <input type="submit" value="Signup">
+                <input type="submit" value="Submit">
               </div>
               <div class="text sign-up-text">Already have an account? <label for="flip">Login now</label></div>
             </div>
@@ -83,55 +83,60 @@
     document.querySelector('#loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
+      const email = document.querySelector('#loginForm input[type="text"]').value;  
+      const password = document.querySelector('#loginForm input[type="password"]').value;
 
       try {
-        const res = await fetch(`${BASE_URL}/login`, {
+        const response = await fetch(`${BASE_URL}/login`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
         });
 
-        const data = await res.json();
+        const data = await response.json();
+        console.log(data);
 
-        if (res.ok && data.token) {
-          localStorage.setItem('token', data.token); // Store JWT token
-          window.location.href = '/app.html';
-        } else {
-          alert(data.message || 'Login failed');
+        if (data.message === 'Login successful') {
+          localStorage.setItem('isLoggedIn', 'true'); 
+          window.location.href = '/app.html';     
+        }
+        else {
+          alert('Invalid credentials');
         }
       } catch (error) {
-        console.error('Login Error:', error);
-        alert('Something went wrong. Try again later.');
+        console.log('Error:', error);
       }
     });
 
     document.querySelector('#signupForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+      e.preventDefault(); 
 
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
+      const name = document.querySelector('#signupForm input[type="text"]').value;
+      const email = document.querySelector('#signupForm input[type="email"]').value;  
+      const password = document.querySelector('#signupForm input[type="password"]').value;
 
       try {
-        const res = await fetch(`${BASE_URL}/signup`, {
+        const response = await fetch(`${BASE_URL}/signup`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, password }),
         });
 
-        const data = await res.json();
+        const data = await response.json();
+        console.log(data);
 
-        if (res.ok) {
-          alert('Signup successful! Please login.');
-          document.getElementById('flip').checked = false;
+        if (data.status === 201) {
+          alert('Signup successful');
         } else {
-          alert(data.message || 'Signup failed');
+          alert(data.message);
         }
       } catch (error) {
-        console.error('Signup Error:', error);
-        alert('Something went wrong. Try again later.');
+        console.log('Error:', error);
+        alert('Error during signup');
       }
     });
   </script>
