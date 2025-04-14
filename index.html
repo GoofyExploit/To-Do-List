@@ -50,7 +50,6 @@
           </form>
         </div>
 
-        <!-- Signup Form -->
         <div class="signup-form">
           <div class="title">Signup</div>
           <form id="signupForm">
@@ -79,6 +78,8 @@
   </div>
 
   <script>
+    const BASE_URL = 'https://to-do-list-ddgt.onrender.com';
+
     document.querySelector('#loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -86,7 +87,7 @@
       const password = document.querySelector('#loginForm input[type="password"]').value;
 
       try {
-        const response = await fetch('http://localhost:5000/login', {
+        const response = await fetch(`${BASE_URL}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -117,7 +118,7 @@
       const password = document.querySelector('#signupForm input[type="password"]').value;
 
       try {
-        const response = await fetch('http://localhost:5000/signup', {
+        const response = await fetch(`${BASE_URL}/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
