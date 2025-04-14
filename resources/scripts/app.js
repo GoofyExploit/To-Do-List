@@ -68,7 +68,8 @@ function addTaskElement(taskObj) {
     const taskList = document.getElementById('taskList');
     const taskDiv = document.createElement('div');
     taskDiv.classList.add('task-container');
-    taskDiv.dataset.id = taskObj._id; // Use _id from MongoDB
+    taskDiv.dataset.id = taskObj._id;
+
     if (taskObj.completed) {
         taskDiv.classList.add('completed');
     }
@@ -100,7 +101,7 @@ function addTaskElement(taskObj) {
     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
     deleteBtn.addEventListener('click', (event) => {
         event.stopPropagation();
-        removeTask(taskDiv, taskObj._id);  // Use _id to delete from MongoDB
+        removeTask(taskDiv, taskObj._id);
     });
 
     taskActions.appendChild(taskDate);
@@ -108,7 +109,6 @@ function addTaskElement(taskObj) {
 
     taskContent.appendChild(taskText);
     taskContent.appendChild(taskActions);
-
     taskDiv.appendChild(taskContent);
 
     taskDiv.addEventListener('click', () => markAsCompleted(taskDiv, taskObj._id));
