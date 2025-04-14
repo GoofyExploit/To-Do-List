@@ -6,10 +6,13 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const Task = require('../models/task');
+const User = require('../models/user');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,16 +24,31 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.error("MongoDB connection error:", err));
 
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+    const token = req.header('Authorization');
+    if (!token) {
+        return res.status(403).json({ message: 'Access denied. No token provided.' });
+    }
 
-app.get('/todos', (req, res) => {
-    Task.find()
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid token' });
+        }
+        req.user = user;
+        next();
+    });
+};
+
+app.get('/todos', authenticateToken, (req, res) => {
+    Task.find({ userId: req.user.id })
         .then(tasks => res.json(tasks))
         .catch(err => res.status(500).json({ message: 'Error fetching tasks', error: err }));
 });
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', authenticateToken, (req, res) => {
     const { id } = req.params;
-    Task.findById(id)
+    Task.findOne({ _id: id, userId: req.user.id })
         .then(task => {
             if (!task) {
                 return res.status(404).json({ message: 'Task not found' });
@@ -40,12 +58,13 @@ app.get('/todos/:id', (req, res) => {
         .catch(err => res.status(500).json({ message: 'Error fetching task', error: err }));
 });
 
-app.post('/todos', (req, res) => {
+app.post('/todos', authenticateToken, (req, res) => {
     const { task, date, completed } = req.body;
     const newTask = new Task({
         task,
         date,
-        completed: completed || false
+        completed: completed || false,
+        userId: req.user.id  // Associate the task with the logged-in user
     });
 
     newTask.save()
@@ -53,11 +72,11 @@ app.post('/todos', (req, res) => {
         .catch(err => res.status(500).json({ message: 'Error saving task', error: err }));
 });
 
-app.put('/todos/:id', (req, res) => {
+app.put('/todos/:id', authenticateToken, (req, res) => {
     const { id } = req.params;
     const { completed } = req.body;
 
-    Task.findByIdAndUpdate(id, { completed }, { new: true })
+    Task.findOneAndUpdate({ _id: id, userId: req.user.id }, { completed }, { new: true })
         .then(updatedTask => {
             if (!updatedTask) {
                 return res.status(404).json({ message: 'Task not found' });
@@ -67,9 +86,9 @@ app.put('/todos/:id', (req, res) => {
         .catch(err => res.status(500).json({ message: 'Error updating task', error: err }));
 });
 
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', authenticateToken, (req, res) => {
     const { id } = req.params;
-    Task.findByIdAndDelete(id)
+    Task.findOneAndDelete({ _id: id, userId: req.user.id })
         .then(deletedTask => {
             if (!deletedTask) {
                 return res.status(404).json({ message: 'Task not found' });
@@ -78,10 +97,6 @@ app.delete('/todos/:id', (req, res) => {
         })
         .catch(err => res.status(500).json({ message: 'Error deleting task', error: err }));
 });
-
-
-const User = require('../models/user');
-const bcrypt = require('bcryptjs');
 
 app.post('/signup', async (req, res) => {
     const { name, email, password } = req.body;
@@ -120,7 +135,9 @@ app.post('/login', async (req, res) => {
         return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    res.json({ message: 'Login successful' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ message: 'Login successful', token });
 });
 
 app.listen(PORT, () => {
