@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', loadTasks);
 
-const API_URL = 'http://localhost:5000/todos';
+const API_URL = 'https://to-do-list-peach-beta.vercel.app/todos';
 
 function loadTasks() {
     fetch(API_URL)
